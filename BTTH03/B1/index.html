@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Information Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="email"], input[type="date"], input[type="file"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="employeeForm">
+    <div class="form-section">
+        <h2>Basic Info</h2>
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName">
+        
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName">
+        
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        
+        <label for="suffix">Suffix:</label>
+        <input type="text" id="suffix" name="suffix">
+        
+        <label for="birthdate">Birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate">
+        
+        <label for="hiredate">Hire Date:</label>
+        <input type="date" id="hiredate" name="hiredate">
+        
+        <label for="ssn">SSN:</label>
+        <input type="text" id="ssn" name="ssn">
+        
+        <label for="reportTo">Report To:</label>
+        <input type="text" id="reportTo" name="reportTo">
+    </div>
+
+    <div class="form-section">
+        <h2>Contact Info</h2>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+        
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address">
+        
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city">
+        
+        <label for="region">Region:</label>
+        <input type="text" id="region" name="region">
+        
+        <label for="postalCode">Postal Code:</label>
+        <input type="text" id="postalCode" name="postalCode">
+        
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country">
+        
+        <label for="usPhoneHome">US Phone (Home):</label>
+        <input type="text" id="usPhoneHome" name="usPhoneHome">
+        
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo">
+    </div>
+
+    <div class="form-section">
+        <h2>Optional Info</h2>
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes"></textarea>
+        
+        <label for="preferredShift">Preferred Shift:</label>
+        <input type="text" id="preferredShift" name="preferredShift">
+        
+        <label for="active">Active:</label>
+        <input type="checkbox" id="active" name="active">
+        
+        <label for="areYouHuman">Are You Human?</label>
+        <input type="checkbox" id="areYouHuman" name="areYouHuman">
+    </div>
+
+    <div class="button-container">
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#employeeForm").validate({
+        rules: {
+            email: {
+                required: true,
+                email: true
+            },
+            postalCode: {
+                required: true,
+                digits: true
+            },
+            usPhoneHome: {
+                required: true,
+                minlength: 10,
+                maxlength: 15
+            }
+        },
+        messages: {
+            email: {
+                required: "Please enter your email address",
+                email: "Please enter a valid email address"
+            },
+            postalCode: {
+                required: "Please enter your postal code",
+                digits: "Please enter only digits"
+            },
+            usPhoneHome: {
+                required: "Please enter your US phone number",
+                minlength: "Phone number must be at least 10 characters long",
+                maxlength: "Phone number must be at most 15 characters long"
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
