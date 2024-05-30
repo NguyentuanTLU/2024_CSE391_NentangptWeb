@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Quản lý sinh viên</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4">Quản lý sinh viên</h2>
+  <div class="mb-4">
+    <label for="lop" class="block text-gray-700 text-sm font-bold mb-2">Chọn lớp:</label>
+    <select id="lop" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </select>
+  </div>
+  <h3 class="text-xl font-bold mb-2">Danh sách sinh viên</h3>
+  <table id="bangSinhVien" class="table-auto w-full">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">Họ tên</th>
+        <th class="px-4 py-2">Mã SV</th>
+        <th class="px-4 py-2">Ngày sinh</th>
+        <th class="px-4 py-2">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <div id="formSinhVienModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Thông tin sinh viên</h3>
+        <div class="mb-4">
+          <label for="hoten" class="block text-gray-700 text-sm font-bold mb-2">Họ tên:</label>
+          <input id="hoten" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+          <label for="masv" class="block text-gray-700 text-sm font-bold mb-2">Mã SV:</label>
+          <input id="masv" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+          <label for="ngaysinh" class="block text-gray-700 text-sm font-bold mb-2">Ngày sinh:</label>
+          <input id="ngaysinh" type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="flex justify-end">
+          <button id="saveStudent" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Lưu</button>
+          <button id="cancelStudent" class="ml-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Hủy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      // Hàm để điền danh sách lớp vào dropdown
+      function populateClassDropdown(classes) {
+        const $lop = $('#lop');
+        $lop.empty();
+        $lop.append('<option value="">Chọn lớp</option>');
+        classes.forEach(function(cls, index) {
+          $lop.append(`<option value="${index}">${cls.tenLop}</option>`);
+        });
+      }
+
+      // Hàm để hiển thị danh sách sinh viên
+      function displayStudentList(students) {
+        const $tbody = $('#bangSinhVien tbody');
+        $tbody.empty();
+        students.forEach(function(student) {
+          $tbody.append(`
+            <tr>
+              <td class="border px-4 py-2">${student.hoTen}</td>
+              <td class="border px-4 py-2">${student.maSV}</td>
+              <td class="border px-4 py-2">${student.ngaySinh}</td>
+              <td class="border px-4 py-2">
+                <button class="editStudent bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded mr-2" data-id="${student.maSV}">Sửa</button>
+                <button class="deleteStudent bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" data-id="${student.maSV}">Xóa</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+
+      // Đọc dữ liệu từ data.json và hiển thị danh sách lớp vào dropdown
+      $.getJSON("data.json", function(data) {
+        populateClassDropdown(data);
+
+        // Xử lý sự kiện khi chọn lớp từ dropdown
+        $('#lop').change(function() {
+          const classIndex = $(this).val();
+          if (classIndex !== "") {
+            const selectedClass = data[classIndex];
+            displayStudentList(selectedClass.sinhVien);
+          } else {
+            $('#bangSinhVien tbody').empty();
+          }
+        });
+      });
+
+      // Mở modal thêm sinh viên mới
+      $('#addStudent').click(function() {
+        $('#formSinhVienModal').removeClass('hidden');
+        $('#saveStudent').data('action', 'add');
+      });
+
+      // Đóng modal
+      $('#cancelStudent').click(function() {
+        $('#formSinhVienModal').addClass('hidden');
+      });
+
+      // Lưu dữ liệu sinh viên (thêm hoặc sửa)
+      $('#saveStudent').click(function() {
+        const action = $(this).data('action');
+        const studentData = {
+          hoTen: $('#hoten').val(),
+          maSV: $('#masv').val(),
+          ngaySinh: $('#ngaysinh').val()
+        };
+
+        // Thêm hoặc sửa sinh viên
+        if (action === 'add') {
+          // Logic thêm sinh viên mới
+        } else if (action === 'edit') {
+          // Logic sửa sinh viên
+        }
+
+        $('#formSinhVienModal').addClass('hidden');
+      });
+
+      // Sự kiện chỉnh sửa sinh viên
+      $(document).on('click', '.editStudent', function() {
+        const studentId = $(this).data('id');
+        // Lấy dữ liệu sinh viên dựa trên studentId và điền vào form để chỉnh sửa
+        $('#formSinhVienModal').removeClass('hidden');
+        $('#saveStudent').data('action', 'edit').data('id', studentId);
+      });
+
+      // Sự kiện xóa sinh viên
+      $(document).on('click', '.deleteStudent', function() {
+        const studentId = $(this).data('id');
+        // Logic xóa sinh viên
+      });
+    });
+  </script>
+</body>
+</html>
